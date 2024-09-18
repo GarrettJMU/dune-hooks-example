@@ -1,20 +1,17 @@
+"use client"
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import { useState, useEffect } from 'react';
+import {useTokenBalances} from '../hooks/useTokenBalances';
+import React from 'react';
+import { BalanceData } from '../types';
 
 const Home: NextPage = () => {
   const [address, setAddress] = useState('');
-
-  useEffect(() => {
-    if (address) {
-      // Perform actions when address changes
-      console.log('Address updated:', address);
-      // You can add more logic here, such as fetching balances
-    }
-  }, [address]);
-
+  const {data} = useTokenBalances("0xaA5cb8B10990a51FBd8a647d61C370282C42C976", {})
+    console.log(data)
   const handleSeeBalances = () => {
     // TODO: Implement balance checking logic
     console.log('Checking balances for:', address);
@@ -34,10 +31,11 @@ const Home: NextPage = () => {
       <main className={styles.main}>
       <h1 className={styles.title}>
           Welcome to <a href="https://github.com/duneanalytics/hooks" target="_blank">Dune Hooks</a> + <a href="">wagmi</a> +{' '}
-          <a href="">Rainbokit</a>
+          <a href="">Rainbowkit</a>
         </h1>
         
         <ConnectButton showBalance={false}/>
+          <BalanceTable balances={data?.balances || []} />
         </main>
 
       <footer className={styles.footer}>
@@ -50,3 +48,55 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+interface BalanceTableProps {
+    balances: BalanceData[];
+}
+
+const balanceTableStyles = {
+    table: {
+        width: '100%',
+        borderCollapse: 'collapse' as const,
+        marginTop: '20px',
+    },
+    headerCell: {
+        borderBottom: '2px solid #4CAF50',
+        textAlign: 'left' as const,
+        padding: '8px',
+        backgroundColor: '#f2f2f2',
+        color: '#333',
+    },
+    row: {
+        borderBottom: '1px solid #ddd',
+    },
+    cell: {
+        padding: '8px',
+        color: '#555',
+    },
+};
+
+
+const BalanceTable: React.FC<BalanceTableProps> = ({ balances }) => {
+    console.log(balances)
+    return (
+        <table style={balanceTableStyles.table}>
+            <thead>
+            <tr>
+                <th style={balanceTableStyles.headerCell}>Address</th>
+                <th style={balanceTableStyles.headerCell}>Amount</th>
+                <th style={balanceTableStyles.headerCell}>Chain</th>
+            </tr>
+            </thead>
+            <tbody>
+            {balances.map((balance, index) => (
+                <tr key={index} style={balanceTableStyles.row}>
+                    <td style={balanceTableStyles.cell}>{balance.address}</td>
+                    <td style={balanceTableStyles.cell}>{balance.amount}</td>
+                    <td style={balanceTableStyles.cell}>{balance.chain}</td>
+                </tr>
+            ))}
+            </tbody>
+        </table>
+    );
+};
+

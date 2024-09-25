@@ -4,7 +4,8 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import { useState, useEffect } from 'react';
-import {useTokenBalances} from '../hooks/useTokenBalances';
+// import {useTokenBalances} from '../hooks/useTokenBalances';
+import {useTokenBalances} from '@duneanalytics/hooks';
 import React from 'react';
 import { BalanceData } from '../types';
 

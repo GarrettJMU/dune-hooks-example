@@ -14,8 +14,6 @@ const Home: NextPage = () => {
 
     const {data} = useTokenBalances(account.address, {})
     const { data: transactionData, isLoading, error, nextPage, previousPage, currentPage } = useTransactions(account.address, {});
-    console.log("transactionData", transactionData, currentPage, nextPage, previousPage)
-    console.log("data", data)
 
     return (
         <div className={styles.container}>
@@ -79,7 +77,6 @@ const balanceTableStyles = {
 
 
 const BalanceTable: React.FC<BalanceTableProps> = ({balances}) => {
-    console.log(balances)
     return (
         <div>
             <h2>Token Balances</h2>
@@ -88,17 +85,26 @@ const BalanceTable: React.FC<BalanceTableProps> = ({balances}) => {
             <tr>
                 <th style={balanceTableStyles.headerCell}>Address</th>
                 <th style={balanceTableStyles.headerCell}>Amount</th>
+                <th style={balanceTableStyles.headerCell}>Value</th>
                 <th style={balanceTableStyles.headerCell}>Chain</th>
             </tr>
             </thead>
             <tbody>
-            {balances.map((balance, index) => (
+            {balances.map((balance, index) => {
+                const amount = BigInt(balance.amount); // Raw amount as BigInt
+                const decimals = balance.decimals !== undefined ? BigInt(balance.decimals) : BigInt(18); // Default to 18 decimals
+                const integerPart = amount / (BigInt(10) ** decimals); // Integer division
+                const remainder = amount % (BigInt(10) ** decimals);   // Remainder for fractional part
+                const fractionalPart = remainder.toString().padStart(Number(decimals), '0').slice(0, 6);  // Showing 6 decimals
+
+                return(
                 <tr key={index} style={balanceTableStyles.row}>
                     <td style={balanceTableStyles.cell}>{balance.address}</td>
-                    <td style={balanceTableStyles.cell}>{balance.amount}</td>
+                    <td style={balanceTableStyles.cell}>  {integerPart.toString()}.{fractionalPart}</td>
+                    <td style={balanceTableStyles.cell}>  ${balance.value_usd}</td>
                     <td style={balanceTableStyles.cell}>{balance.chain}</td>
                 </tr>
-            ))}
+            )})}
             </tbody>
         </table>
         </div>

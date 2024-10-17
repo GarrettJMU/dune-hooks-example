@@ -12,8 +12,8 @@ import { useAccount } from 'wagmi'
 const Home: NextPage = () => {
     const account = useAccount()
 
-    const {data} = useTokenBalances(account.address, {}, process.env.NEXT_PUBLIC_DUNE_API_KEY)
-    const {data: transactionData} = useTransactions(account.address, {}, process.env.NEXT_PUBLIC_DUNE_API_KEY)
+    const {data} = useTokenBalances(account.address, {})
+    const {data: transactionData} = useTransactions(account.address, {})
     console.log("transactionData", transactionData)
     console.log("data", data)
 

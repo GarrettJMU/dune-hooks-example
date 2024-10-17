@@ -13,8 +13,8 @@ const Home: NextPage = () => {
     const account = useAccount()
 
     const {data} = useTokenBalances(account.address, {})
-    const {data: transactionData} = useTransactions(account.address, {})
-    console.log("transactionData", transactionData)
+    const { data: transactionData, isLoading, error, nextPage, previousPage, currentPage } = useTransactions(account.address, {});
+    console.log("transactionData", transactionData, currentPage, nextPage, previousPage)
     console.log("data", data)
 
     return (
@@ -37,6 +37,7 @@ const Home: NextPage = () => {
 
                 <ConnectButton showBalance={false}/>
                 <BalanceTable balances={data?.balances || []}/>
+                <TransactionTable data={transactionData} isLoading={isLoading} error={error} nextPage={nextPage} currentPage={currentPage} previousPage={previousPage}/>
             </main>
 
             <footer className={styles.footer}>
@@ -80,6 +81,8 @@ const balanceTableStyles = {
 const BalanceTable: React.FC<BalanceTableProps> = ({balances}) => {
     console.log(balances)
     return (
+        <div>
+            <h2>Token Balances</h2>
         <table style={balanceTableStyles.table}>
             <thead>
             <tr>
@@ -98,6 +101,42 @@ const BalanceTable: React.FC<BalanceTableProps> = ({balances}) => {
             ))}
             </tbody>
         </table>
+        </div>
     );
 };
+
+
+const TransactionTable: React.FC<{ data: any[], isLoading: boolean }> = ({data, isLoading, error, previousPage, nextPage, currentPage}) => {
+    return (
+        <div>
+            <h2>Transactions</h2>
+            <table style={balanceTableStyles.table}>
+                <thead>
+                <tr>
+                    <th style={balanceTableStyles.headerCell}>Address</th>
+                    <th style={balanceTableStyles.headerCell}>Hash</th>
+                    <th style={balanceTableStyles.headerCell}>Chain</th>
+                </tr>
+                </thead>
+                <tbody>
+                {data?.transactions.map(tx => (
+                    <tr key={tx.hash} style={balanceTableStyles.row}>
+                        <td style={balanceTableStyles.cell}>{tx.to}</td>
+                        <td style={balanceTableStyles.cell}>{tx.hash}</td>
+                        <td style={balanceTableStyles.cell}>{tx.chain}</td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+
+            <button onClick={previousPage} disabled={currentPage === 0}>
+                Previous Page
+            </button>
+            <button onClick={nextPage} disabled={!data?.next_offset}>
+                Next Page
+            </button>
+            <p>Page: {currentPage + 1 || 1}</p>
+        </div>
+    );
+}
 

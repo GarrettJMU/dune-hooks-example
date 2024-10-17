@@ -3,21 +3,19 @@ import {ConnectButton} from '@rainbow-me/rainbowkit';
 import type {NextPage} from 'next';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import {useState, useEffect} from 'react';
 import {useTokenBalances, useTransactions} from '@duneanalytics/hooks';
 import React from 'react';
 import {BalanceData} from '../types';
+import { useAccount } from 'wagmi'
+
 
 const Home: NextPage = () => {
-    const [address, setAddress] = useState('');
-    const {data} = useTokenBalances("0xaA5cb8B10990a51FBd8a647d61C370282C42C976", {}, process.env.NEXT_PUBLIC_DUNE_API_KEY)
-    const {data: transactionData} = useTransactions("0xaA5cb8B10990a51FBd8a647d61C370282C42C976", {}, process.env.NEXT_PUBLIC_DUNE_API_KEY)
+    const account = useAccount()
+
+    const {data} = useTokenBalances(account.address, {}, process.env.NEXT_PUBLIC_DUNE_API_KEY)
+    const {data: transactionData} = useTransactions(account.address, {}, process.env.NEXT_PUBLIC_DUNE_API_KEY)
     console.log("transactionData", transactionData)
     console.log("data", data)
-    const handleSeeBalances = () => {
-        // TODO: Implement balance checking logic
-        console.log('Checking balances for:', address);
-    };
 
     return (
         <div className={styles.container}>

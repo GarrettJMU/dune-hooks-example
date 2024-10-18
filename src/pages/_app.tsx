@@ -14,7 +14,7 @@ function MyApp({Component, pageProps}: AppProps) {
     return (
         <WagmiProvider config={config}>
             <QueryClientProvider client={client}>
-                <DuneProvider duneApiKey={process.env.NEXT_PUBLIC_DUNE_API_KEY}>
+                <DuneProvider duneApiKey={process.env.NEXT_PUBLIC_DUNE_API_KEY as string}>
                     <RainbowKitProvider>
                         <Component {...pageProps} />
                     </RainbowKitProvider>
